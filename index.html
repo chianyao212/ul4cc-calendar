@@ -6,31 +6,28 @@
     <title>Alvin 的行事曆</title>
     <meta name="description" content="這裡是 Alvin 的行事曆！">
     <style>
+        body {
+            background-color: #F8B62D;
+            margin: 0; /* 移除 body 的默認邊距 */
+            display: flex;
+            justify-content: center; /* 垂直置中 */
+            align-items: center; /* 水平置中 */
+            height: 100vh; /* 使 body 高度填滿視窗 */
+            overflow: hidden; /* 隱藏超出範圍的內容 */
+        }
         iframe {
-          position: absolute;
-          top: 0;
-          left: 0;
-          bottom: 0;
-          right: 0;
-          margin: auto;
-          width: 93%;
-          height: 90%;
-          /* padding: 15px; */
-          border-radius: 20px;
-          z-index: 1;
-          box-shadow: 0 5px 10px rgb(0 0 0 / 0.3);
-          background-color: rgba(255, 255, 255, 0.03);
+            width: 90%; /* 設置寬度，留出邊距 */
+            height: 90%; /* 設置高度，留出邊距 */
+            border-radius: 20px;
+            box-shadow: 0 5px 10px rgb(0 0 0 / 0.3);
+            background-color: rgba(255, 255, 255, 0.03);
         }
         @media only screen and (max-width: 480px) {
-          iframe {
-            width: 95%;
-            height: 95%;
-            padding: 0;
-            border-radius: 15px;
-          }
-        }
-        body {
-         background-color: #F8B62D;
+            iframe {
+                width: 95%;
+                height: 95%;
+                border-radius: 15px;
+            }
         }
     </style>
 </head>
@@ -38,7 +35,6 @@
     <!-- Google Calendar Embed Code -->
     <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Asia%2FTaipei&bgcolor=%23ffffff&mode=WEEK&showPrint=0&showTabs=0&showTz=0&showTitle=0&src=OGRkMmEzN2E2MTczNDU3MjA5NTcwZTNjNTU2ZDEyYmNmZGMxZjkwMDQwYTI2ZWI1ODYxMDFhNDMyZDEzZGEyZEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=bWFpbC5zaHUuZWR1LnR3X3BsajNrbWJxczA5Zm5vODh1ZWJsMGh0NzYwQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&color=%239e2821&color=%237986CB" 
         style="border:solid 1px #777" 
-        width="100%" height="100%" 
         frameborder="0" scrolling="no">
     </iframe>
 </body>
