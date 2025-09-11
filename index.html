@@ -1,103 +1,206 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alvin's Calendar</title>
-    <meta name="description" content="This is Alvin's calendar.">
-    <style>
-        body {
-            background-color: #474747;
-            margin: 0;
-            display: flex;
-            justify-content: center; /* 讓主容器置中 */
-            min-height: 100vh;
-            overflow-y: auto;
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Alvin's Payment Method</title>
+  <!-- 阻止搜尋引擎索引 -->
+  <meta name="robots" content="noindex, nofollow" />
+  <style>
+    :root{
+      --bg: #292929;
+      --panel: #141417;
+      --muted: #9aa0a6;
+      --text: #ffffff;
+      --accent: #F8B62D;
+      --accent-2:#F8B62D;
+      --ring: rgba(248,182,45,.35);
+      --border:#25262b;
+      --chip:#1b1c21;
+    }
+    html,body{height:100%}
+    body{
+      margin:0; background:var(--bg); color:var(--text); font:16px/1.6 "Noto Sans TC", "思源黑體", sans-serif;
+    }
+    a, a:visited, a:hover, a:active {
+      color: inherit;
+      text-decoration: none;
+    }
+    .wrap{max-width:720px;margin:40px auto;padding:0 16px}
+    header.top-header{margin:24px 0 16px}
+    .brand{
+      font-weight:700;
+      letter-spacing:.3px;
+      text-align:left;
+      font-family:monospace;
+      color:white;
+      transform:translateX(10px);
+      text-shadow:1px 1px 3px rgba(0,0,0,0.3);
+    }
+    .brand-sub{
+      color:var(--muted);
+      font-size:14px;
+      margin-top:4px;
+      transform:translateX(10px);
+      white-space:normal;
+      word-break:break-word;
+    }
 
-        .main-container {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start; /* 讓內部所有內容靠左對齊 */
-            width: 90%; /* 設置與 iframe 相同的寬度 */
-            max-width: 1024px; /* 設置與 iframe 相同的最大寬度 */
-            padding-top: 20px;
-            padding-bottom: 40px;
-            box-sizing: border-box;
-        }
+    .group{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px;margin:16px 0;box-shadow:0 0 0 1px rgba(255,255,255,0.02) inset}
+    .group header{display:flex;align-items:center;justify-content:space-between;margin:0 0 8px}
+    .group header > div:first-child{display:flex;flex-direction:column;justify-content:center}
+    .title{font-weight:600;display:flex;align-items:center}
 
-        .info-container {
-            margin-bottom: 20px;
-            text-align: left;
-            font-family: monospace;
-            color: white;
-            transform: translateX(10px); /* 新增：只移動這個區塊 */
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3); /* 新增：為文字加上陰影 */
+    .toggle{appearance:none;border:0;background:none;color:var(--text);cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center}
+    .toggle svg{width:28px;height:28px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s ease}
+    .toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
 
-        }
+    .subtitle{color:var(--muted);font-size:13px;margin-top:4px;font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace}
 
-        .color-legend {
-            display: flex;
-            justify-content: flex-start;
-            gap: 20px;
-            margin-top: 10px;
-        }
+    .content{max-height:0;overflow:hidden;transition:max-height .85s cubic-bezier(0.25, 0.8, 0.25, 1),padding .8s cubic-bezier(0.25, 0.8, 0.25, 1),margin .8s cubic-bezier(0.25, 0.8, 0.25, 1),opacity .8s cubic-bezier(0.25, 0.8, 0.25, 1);opacity:0;padding:0;margin:0}
+    .content.open{max-height:600px;opacity:1;padding:16px;margin:16px 0;border-top:1px solid var(--border)}
 
-        .legend-item {
-            display: flex;
-            align-items: center;
-        }
+    .qr{display:block;width:180px;height:180px;border-radius:12px;border:1px solid var(--border);margin:0 0 12px 0;object-fit:cover}
 
-        .legend-box {
-            width: 20px;
-            height: 20px;
-            margin-right: 8px;
-            border-radius: 4px;
-            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
-        }
+    .info{margin:12px 0 8px;color:#e5e7eb;text-align:left}
+    .muted{color:var(--muted);font-size:14px;text-align:left}
 
-        .legend-box.red { background-color: #EC4E20; }
-        .legend-box.yellow { background-color: #FFE93F; }
-        .legend-box.green { background-color: #7fb344; }
+    .copy{appearance:none;border:0;background:linear-gradient(180deg,var(--accent),var(--accent-2));color:#ffffff;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer;text-shadow:1px 1px 3px rgba(0,0,0,0.3)}
+    .copy:hover{filter:brightness(1.05)}
+    .copy:active{transform:translateY(1px)}
 
-        iframe {
-            width: 100%; /* 讓 iframe 填滿父容器寬度 */
-            height: 90%;
-            border-radius: 20px;
-            box-shadow: 0 5px 10px rgb(0 0 0 / 0.3);
-            background-color: rgba(255, 255, 255, 0.03);
-            flex-grow: 1;
-        }
+    .toast{position:fixed;inset:auto 0 24px 0;display:flex;justify-content:center;pointer-events:none}
+    .toast span{background:#111318;border:1px solid var(--border);padding:10px 14px;border-radius:999px;box-shadow:0 12px 40px rgba(0,0,0,.45);opacity:0;transform:translateY(8px);transition:all .25s ease;color:#d1e7ff}
+    .toast.show span{opacity:1;transform:translateY(0)}
 
-        @media only screen and (max-width: 480px) {
-            .main-container {
-                width: 95%;
-            }
-        }
-    </style>
+    .invisible-note{color:var(--panel); margin-left:10pt; background-color:var(--panel); user-select:text}
+
+    .random-img{display:block;width:50%;border-radius:16px;box-shadow:0 0 0 1px rgba(255,255,255,0.02) inset;border:1px solid var(--border);margin:24px auto}
+  </style>
 </head>
 <body>
-    <div class="main-container">
-        <div class="info-container">
-            <h2>Alvin's Calendar</h2>
-            <div class="color-legend">
-                <div class="legend-item">
-                    <div class="legend-box red"></div>
-                    <span>課表</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-box yellow"></div>
-                    <span>工作</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-box green"></div>
-                    <span>私人行程</span>
-                </div>
-            </div>
+  <div class="wrap">
+    <header class="top-header">
+      <div>
+        <div class="brand">Alvin's Payment Method</div>
+        <div class="brand-sub">把藝術都給殺了 \ 殺了 /　商品做起來了 \ 來了 /　追夢少年窮了跟著芒果醬就富了 \ 富了 /</div>
+      </div>
+    </header>
+
+    <section class="group" id="g1">
+      <header>
+        <div>
+          <div class="title">中國信託 822<span class="invisible-note">惠中分行 2156</span></div>
+          <div class="subtitle">156540221507</div>
         </div>
-        <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Asia%2FTaipei&showPrint=0&title=Alvin's%20Calendar&mode=WEEK&src=Y2hpYW55YW8yMTJAZ21haWwuY29t&src=MGNlOWY2NDk3ZThiYzhmOTJjODdhZWQwY2E2Njg5Njc2NTZkZjgzMDAyYzNkZTZlZmZmM2YzZjE1NjRiMWNkYkBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=OGRkMmEzN2E2MTczNDU3MjA5NTcwZTNjNTU2ZDEyYmNmZGMxZjkwMDQwYTI2ZWI1ODYxMDFhNDMyZDEzZGEyZEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%237cb342&color=%23f6bf26&color=%23d50000"
-            style="border-width:0" width="800" height="600"
-            frameborder="0" scrolling="no"></iframe>
-    </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button class="copy" data-target="#g1 .subtitle">複製</button>
+          <button class="toggle" aria-controls="c1" aria-expanded="false">
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+      </header>
+      <div class="content" id="c1">
+        <img src="./images/822.jpg" alt="中國信託 QR Code" class="qr" />
+        <div class="info">請使用網銀 APP 掃描 QR Code，或複製貼上帳號。</div>
+        <div class="muted">轉帳前請務必再次確認資訊及金額正確，轉帳完成請務必告知我末三碼。</div>
+      </div>
+    </section>
+
+    <section class="group" id="g2">
+      <header>
+        <div>
+          <div class="title">將來銀行 823<span class="invisible-note">營業部 1688</span></div>
+          <div class="subtitle">88669310810828</div>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button class="copy" data-target="#g2 .subtitle">複製</button>
+          <button class="toggle" aria-controls="c2" aria-expanded="false">
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+      </header>
+      <div class="content" id="c2">
+        <img src="./images/823.jpg" alt="將來銀行 QR Code" class="qr" />
+        <div class="info">請使用網銀 APP 掃描 QR Code，或複製貼上帳號。</div>
+        <div class="muted">轉帳前請務必再次確認資訊及金額正確，轉帳完成請務必告知我末三碼。</div>
+      </div>
+    </section>
+
+    <section class="group" id="g3">
+      <header>
+        <div>
+          <div class="title">iPASS MONEY（一卡通） 391</div>
+          <div class="subtitle">29091895036</div>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button class="copy" data-target="#g3 .subtitle">複製</button>
+          <button class="toggle" aria-controls="c3" aria-expanded="false">
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+      </header>
+      <div class="content" id="c3">
+        <img src="./images/391.jpg" alt="iPASS MONEY QR Code" class="qr" />
+        <div class="info">請用 LINE 掃描 QR Code，或至 LINE 首頁 > 錢包 > LINE Pay > iPASS MONEY > 轉帳代碼 > 貼上帳號。</div>
+        <div class="muted">轉帳前請務必再次確認資訊及金額正確，轉帳完成請務必告知我末三碼。</div>
+      </div>
+    </section>
+
+    <img id="randomImage" class="random-img" alt="隨機圖片" />
+
+  </div>
+
+  <div class="toast" aria-live="polite" aria-atomic="true"><span id="toastMsg">已複製</span></div>
+
+  <script>
+    document.querySelectorAll('.toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('aria-controls');
+        const panel = document.getElementById(id);
+        const opened = panel.classList.toggle('open');
+        btn.setAttribute('aria-expanded', opened);
+      });
+    });
+
+    const toast = document.querySelector('.toast');
+    const toastMsg = document.getElementById('toastMsg');
+
+    function showToast(text){
+      toastMsg.textContent = text;
+      toast.classList.add('show');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(()=>toast.classList.remove('show'), 1400);
+    }
+
+    async function copyText(text){
+      try{
+        await navigator.clipboard.writeText(text);
+        showToast('已複製到剪貼簿');
+      }catch(err){
+        const ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); showToast('已複製'); } finally { document.body.removeChild(ta); }
+      }
+    }
+
+    document.querySelectorAll('.copy').forEach(btn => {
+      btn.addEventListener('click', () => {
+        let targetEl;
+        const t = btn.getAttribute('data-target');
+        if (t) {
+          targetEl = document.querySelector(t);
+        }
+        if (!targetEl) return;
+        const value = targetEl.textContent.trim();
+        copyText(value);
+      });
+    });
+
+    // 隨機圖片邏輯
+    const imgElement = document.getElementById('randomImage');
+    const randomNum = String(Math.floor(Math.random() * 9) + 1).padStart(2,'0');
+    imgElement.src = './images/' + randomNum + '.jpg';
+  </script>
 </body>
 </html>
